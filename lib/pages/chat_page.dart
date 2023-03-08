@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:real_time_chat_app/widgets/chat_message.dart';
  
 class ChatPage extends StatefulWidget {
  
@@ -9,10 +10,14 @@ class ChatPage extends StatefulWidget {
   State<ChatPage> createState() => _ChatPageState();
 }
 
-class _ChatPageState extends State<ChatPage> {
+class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin { // vsync this
+
 
   final _textController = TextEditingController();
   final _focusNode = FocusNode();
+  bool _isWriting = false;
+
+  List<ChatMessage> _messages =  [];
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +49,8 @@ class _ChatPageState extends State<ChatPage> {
             Flexible( // flexibilidad, si no error con listview.builder
               child: ListView.builder(
                 physics: BouncingScrollPhysics(),
-                itemBuilder: (context, i) => Text('$i'),
+                itemCount: _messages.length,
+                itemBuilder: (context, i) => _messages[i],
                 reverse: true, // de abajo hacia arriba
               ),
             ),
@@ -74,8 +80,10 @@ class _ChatPageState extends State<ChatPage> {
               child: TextField(
                 controller: _textController,
                 onSubmitted: _handleSubmit, // enviar entrega
-                onChanged: (value) {
-                  // TODO: verificar valor por enviar
+                onChanged: (text) {
+                  setState(() {
+                    text.trim().isNotEmpty ? _isWriting = true : _isWriting = false;
+                  });
                 },
                 decoration: InputDecoration.collapsed(
                   hintText: 'Enviar mensaje',
@@ -88,14 +96,19 @@ class _ChatPageState extends State<ChatPage> {
               margin: EdgeInsets.symmetric( horizontal: 4 ),
               child: Platform.isIOS
                 ? CupertinoButton(
-                  child: Text('Enviar'), 
-                  onPressed: () {
-                    
-                  }
-                )
-                : IconButton(
-                  icon: Icon(Icons.send, color: Colors.blue,),
-                  onPressed: () {},
+                  onPressed: _isWriting
+                    ? () => _handleSubmit( _textController.text.trim() )
+                    : null,
+                  child: const Text('Enviar'))
+                : IconTheme(
+                  data: IconThemeData( color: Colors.blue ),
+                  child: IconButton(
+                    highlightColor: Colors.transparent, // efecto splash en transparente
+                    splashColor: Colors.transparent, // efecto splash en transparente
+                    icon: Icon(Icons.send),
+                    onPressed: _isWriting
+                      ? () => _handleSubmit( _textController.text.trim() ) 
+                      : null)
                 ),
             ),
           ],
@@ -105,8 +118,39 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   _handleSubmit( String texto) { // enviar entrega
-    print(texto);
+    if( texto.trim().isEmpty ) return;
+
+    // print(texto);
     _textController.clear(); // borrar el textController cada vez que se envie
     _focusNode.requestFocus(); // no se baje el teclado
+
+    final newMessage = ChatMessage(
+      uid: '123', 
+      text: texto, 
+      animationController: AnimationController(
+        vsync: this,
+        duration: Duration( milliseconds: 500 ),
+      ),
+    );
+
+    _messages.insert(0, newMessage );
+
+    newMessage.animationController.forward(); // play a la animation
+
+    setState(() {
+      _isWriting = false; 
+    });
+  }
+
+  @override
+  void dispose() {
+    // TODO: cancelar listen del socket
+
+    // TODO: limpiar instancias que se tiene en el arreglo de mensajes
+    for( ChatMessage message in _messages ) {
+      message.animationController.dispose();
+    }
+    
+    super.dispose();
   }
 }
