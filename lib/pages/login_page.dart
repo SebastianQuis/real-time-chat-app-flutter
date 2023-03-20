@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:real_time_chat_app/services/auth_service.dart';
 
 import 'package:real_time_chat_app/widgets/widgets.dart';
 
@@ -82,8 +84,12 @@ class _FormState extends State<_Form> {
           ButtonBlue(
             text: 'Ingresar',
             onPressed: (){
-              print(this.emailController.text);
-              print(this.passwordController.text);
+              final authService = Provider.of<AuthService>(context, listen: false);
+
+              // print(this.emailController.text);
+              // print(this.passwordController.text);
+
+              authService.login(emailController.text, passwordController.text);
             }, 
           ),
 

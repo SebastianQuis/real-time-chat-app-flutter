@@ -1,5 +1,5 @@
+import 'package:flutter/material.dart';
 
-import 'package:flutter/cupertino.dart';
 import 'package:real_time_chat_app/pages/pages.dart';
 
 final Map<String, Widget Function(BuildContext)> appRoutes = {

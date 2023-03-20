@@ -42,7 +42,6 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin { // 
       ),
 
       body: Container(
-        // padding: EdgeInsets.symmetric( horizontal: 10 ),
         child: Column(
           children: [
 
@@ -50,8 +49,8 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin { // 
               child: ListView.builder(
                 physics: BouncingScrollPhysics(),
                 itemCount: _messages.length,
-                itemBuilder: (context, i) => _messages[i],
-                reverse: true, // de abajo hacia arriba
+                itemBuilder: (context, i) => _messages[i], // retorna un widget mymessage - mynotmessage
+                reverse: true, // scroll de abajo hacia arriba
               ),
             ),
 
@@ -76,7 +75,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin { // 
         child: Row(
           children: [
             
-            Flexible(
+            Flexible( // extienda todo lo necesario
               child: TextField(
                 controller: _textController,
                 onSubmitted: _handleSubmit, // enviar entrega
@@ -85,7 +84,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin { // 
                     text.trim().isNotEmpty ? _isWriting = true : _isWriting = false;
                   });
                 },
-                decoration: InputDecoration.collapsed(
+                decoration: InputDecoration.collapsed( // no incluye borde por defecto
                   hintText: 'Enviar mensaje',
                 ),
                 focusNode: _focusNode,
@@ -122,9 +121,9 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin { // 
 
     // print(texto);
     _textController.clear(); // borrar el textController cada vez que se envie
-    _focusNode.requestFocus(); // no se baje el teclado
+    _focusNode.requestFocus(); // no se baje el teclado una vez envie el texto
 
-    final newMessage = ChatMessage(
+    final newMessage = ChatMessage( // nuevo mensaje
       uid: '123', 
       text: texto, 
       animationController: AnimationController(
@@ -133,7 +132,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin { // 
       ),
     );
 
-    _messages.insert(0, newMessage );
+    _messages.insert(0, newMessage ); // insertando en la pos[0] el nuevo mensaje
 
     newMessage.animationController.forward(); // play a la animation
 

@@ -38,7 +38,7 @@ class CustomInput extends StatelessWidget {
           prefixIcon: icon,
           focusedBorder: InputBorder.none,
           border: InputBorder.none,
-          hintText: hintText
+          hintText: hintText,
         ),
       )
     );
