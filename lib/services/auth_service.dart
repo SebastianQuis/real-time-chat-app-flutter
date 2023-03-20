@@ -11,16 +11,24 @@ import 'package:real_time_chat_app/models/usuario.dart';
 class AuthService with ChangeNotifier{
 
   late Usuario usuario;
+  bool _autenticando = false;
+
+  bool get autenticando => _autenticando;
+  
+  set autenticando( bool value ) {
+    _autenticando = value;
+    notifyListeners();
+  }
 
   Future login( String email, String password ) async {
-    
+    autenticando = true;
+
     final data = {
       'email': email,
       'password': password
     };
 
     final login = Uri.parse( '${Environment.apiUrl}/login' );
-
     final resp = await http.post( login,
       body: jsonEncode(data),
       headers: {
@@ -34,6 +42,8 @@ class AuthService with ChangeNotifier{
       usuario = loginResponse.usuario;
       print(usuario.uid);
     }
+
+    autenticando = false;
   }
 
 
