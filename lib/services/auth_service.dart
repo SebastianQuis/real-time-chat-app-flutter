@@ -14,13 +14,12 @@ class AuthService with ChangeNotifier{
   bool _autenticando = false;
 
   bool get autenticando => _autenticando;
-  
   set autenticando( bool value ) {
     _autenticando = value;
     notifyListeners();
   }
 
-  Future login( String email, String password ) async {
+  Future<bool> login( String email, String password ) async {
     autenticando = true;
 
     final data = {
@@ -35,16 +34,18 @@ class AuthService with ChangeNotifier{
         'Content-Type': 'application/json'
       }
     );
-    // print(resp.body);
+
+    print(resp.body);
+    autenticando = false;
 
     if ( resp.statusCode == 200 ) { // success
       final loginResponse = loginResponseFromJson(resp.body);
       usuario = loginResponse.usuario;
-      print(usuario.uid);
+      // print(usuario.uid);
+      return true;
+    } else {
+      return false;
     }
-
-    autenticando = false;
   }
-
 
 }
