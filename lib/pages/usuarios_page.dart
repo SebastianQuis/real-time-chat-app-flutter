@@ -81,17 +81,17 @@ class _UserListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: CircleAvatar(
-        child: Text(usuario.nombre!.substring(0,2)),
+        child: Text(usuario.nombre.substring(0,2)),
         backgroundColor: Colors.blue[100],
       ),
-      title: Text(usuario.nombre!),
-      subtitle: Text(usuario.email!),
+      title: Text(usuario.nombre),
+      subtitle: Text(usuario.email),
       trailing: Container(
         width: 10,
         height: 10,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: usuario.online! ? Colors.green : Colors.red,
+          color: usuario.online ? Colors.green : Colors.red,
         ),
       ),
     );

@@ -92,9 +92,12 @@ class _FormState extends State<_Form> {
                 FocusScope.of(context).unfocus(); 
                 final loginStatus = await authService.login(emailController.text.trim(), passwordController.text.trim()); 
 
-                loginStatus 
-                  ? Navigator.pushNamed(context, 'users')
-                  : mostrarAlerta(context, 'Login incorrecto', 'Verificar sus credenciales de ingreso.'); 
+                if (loginStatus) {
+                  //TODO: conectar al socket server
+                  Navigator.pushReplacementNamed(context, 'users'); 
+                } else {
+                  mostrarAlerta(context, 'Login incorrecto', 'Verificar sus credenciales de ingreso.'); 
+                }
               }
           ),
 
