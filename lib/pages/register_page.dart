@@ -100,14 +100,14 @@ class _FormState extends State<_Form> {
               : () async {
                 FocusScope.of(context).unfocus();
 
-                final loginStatus = await authService.register(nameController.text, emailController.text, passwordController.text);
-                if (loginStatus == true) {
+                final isLogged = await authService.register(nameController.text, emailController.text, passwordController.text);
+                if (isLogged == true) {
                   //TODO: conectar al socket server
                   Navigator.pushReplacementNamed(context, 'users'); 
-                } else if (loginStatus == false) {
+                } else if (isLogged == false) {
                   mostrarAlerta(context, 'Registro incorrecto', 'Registro inválido'); 
                 } else {
-                  mostrarAlerta(context, 'Registro incorrecto', '${loginStatus}');
+                  mostrarAlerta(context, 'Registro incorrecto', '${isLogged}');
                 }
             }, 
           ),

@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Real time chat app - Flutter',
-        initialRoute: 'login',
+        initialRoute: 'loading',
         routes: appRoutes,
       ),
     );
