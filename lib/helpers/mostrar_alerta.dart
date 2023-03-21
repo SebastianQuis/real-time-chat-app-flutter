@@ -6,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 
 mostrarAlerta( BuildContext context, String titulo, String descripcion){
 
-  if( !Platform.isAndroid ) {
+  if( Platform.isAndroid ) {
     return showDialog(
       context: context, 
       builder: (context) => 

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+import 'package:provider/provider.dart';
+
+import 'package:real_time_chat_app/helpers/mostrar_alerta.dart';
+import 'package:real_time_chat_app/services/auth_service.dart';
 import 'package:real_time_chat_app/widgets/widgets.dart';
 
 class RegisterPage extends StatelessWidget {
@@ -51,12 +55,14 @@ class _Form extends StatefulWidget {
 }
 
 class _FormState extends State<_Form> {
-  final emailController = TextEditingController();
+  final emailController    = TextEditingController();
   final passwordController = TextEditingController();
-  final nameController = TextEditingController();
+  final nameController     = TextEditingController();
   
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+    
     return Container(
       // margin: EdgeInsets.only( top: 30 ),
       padding: EdgeInsets.symmetric(horizontal: 40 ),
@@ -67,7 +73,7 @@ class _FormState extends State<_Form> {
         children: [
 
           CustomInput(
-            hintText: 'Email', 
+            hintText: 'Nombre', 
             icon: Icon(Icons.perm_identity), 
             keyboardType: TextInputType.text, 
             textController: nameController,
@@ -89,9 +95,20 @@ class _FormState extends State<_Form> {
           
           ButtonBlue(
             text: 'Registrar',
-            onPressed: (){
-              print(this.emailController.text);
-              print(this.passwordController.text);
+            onPressed: authService.autenticando
+              ? null
+              : () async {
+                FocusScope.of(context).unfocus();
+
+                final loginStatus = await authService.register(nameController.text, emailController.text, passwordController.text);
+                if (loginStatus == true) {
+                  //TODO: conectar al socket server
+                  Navigator.pushReplacementNamed(context, 'users'); 
+                } else if (loginStatus == false) {
+                  mostrarAlerta(context, 'Registro incorrecto', 'Registro inválido'); 
+                } else {
+                  mostrarAlerta(context, 'Registro incorrecto', '${loginStatus}');
+                }
             }, 
           ),
 

@@ -68,6 +68,38 @@ class AuthService with ChangeNotifier{
     }
   }
 
+  Future<dynamic> register( String nombre, String email, String password ) async {
+    this.autenticando = true;
+
+    final data = {
+      'nombre'   : nombre,
+      'email'    : email,
+      'password' : password,
+    };
+    
+    final register = Uri.parse( '${Environment.apiUrl}/login/new' );
+    
+    final resp = await http.post( register,
+      body: jsonEncode(data),
+      headers: { 'Content-Type': 'application/json' }
+    );
+
+    print(resp.body);
+    this.autenticando = false;
+
+    if ( resp.statusCode == 200 ) {
+      final loginResponse = loginResponseFromJson(resp.body);
+      usuario = loginResponse.usuario;
+      await guardarToken(loginResponse.token);
+      return true;
+    } else {
+      final respBody = jsonDecode(resp.body);
+      return respBody['message'] ?? respBody['ok'];
+      // return false;
+    }
+
+  }
+  
   Future guardarToken( String token ) async { // escribiendo el token
     return await _storage.write(key: 'token', value: token);
   }

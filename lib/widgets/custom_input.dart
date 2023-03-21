@@ -7,6 +7,7 @@ class CustomInput extends StatelessWidget {
   final TextEditingController textController;
   final TextInputType? keyboardType;
   final bool? isPassword;
+  final String? Function(String?)? onPressed;
 
   CustomInput({ 
     required this.hintText, 
@@ -14,6 +15,7 @@ class CustomInput extends StatelessWidget {
     required this.textController,
     this.keyboardType = TextInputType.text, 
     this.isPassword = false, 
+    this.onPressed, 
   });
 
 
@@ -29,7 +31,7 @@ class CustomInput extends StatelessWidget {
           BoxShadow( color: Colors.black45, offset: Offset(0, 2), blurRadius: 3)
         ]
       ),
-      child: TextField(
+      child: TextFormField(
         controller: textController,
         autocorrect: false,
         keyboardType: keyboardType,
@@ -40,6 +42,7 @@ class CustomInput extends StatelessWidget {
           border: InputBorder.none,
           hintText: hintText,
         ),
+        validator: onPressed,
       )
     );
   }

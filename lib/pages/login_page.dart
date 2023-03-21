@@ -54,7 +54,7 @@ class _Form extends StatefulWidget {
 }
 
 class _FormState extends State<_Form> {
-  final emailController = TextEditingController();
+  final emailController    = TextEditingController();
   final passwordController = TextEditingController();
   
   @override
@@ -90,10 +90,11 @@ class _FormState extends State<_Form> {
               ? null // bloqueando el button
               : () async { 
                 FocusScope.of(context).unfocus(); 
-                final loginStatus = await authService.login(emailController.text.trim(), passwordController.text.trim()); 
+                final isLogged = await authService.login(emailController.text.trim(), passwordController.text.trim()); 
 
-                if (loginStatus) {
+                if ( isLogged ) {
                   //TODO: conectar al socket server
+                  
                   Navigator.pushReplacementNamed(context, 'users'); 
                 } else {
                   mostrarAlerta(context, 'Login incorrecto', 'Verificar sus credenciales de ingreso.'); 
