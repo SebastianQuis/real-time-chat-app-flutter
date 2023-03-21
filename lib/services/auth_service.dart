@@ -16,6 +16,8 @@ class AuthService with ChangeNotifier{
   bool _autenticando = false;
   final _storage = FlutterSecureStorage();
 
+  Usuario get getUsuario => this.usuario;
+
   bool get autenticando => _autenticando;
   set autenticando( bool value ) {
     _autenticando = value;
@@ -102,13 +104,12 @@ class AuthService with ChangeNotifier{
 
   Future<bool> isLoggedIn() async{
     final token = await _storage.read(key: 'token');
-    print(token);
     final renew = Uri.parse( '${Environment.apiUrl}/login/renew' );
     
     final resp = await http.get( renew,
       headers: { 
         'Content-Type': 'application/json',
-        'x-token': token!  
+        'x-token': token ?? 'no token'
       }
     );
 
@@ -121,7 +122,7 @@ class AuthService with ChangeNotifier{
       logout();
       return false;
     }
-  }
+  }  
   
   Future guardarToken( String token ) async { // escribiendo el token
     return await _storage.write(key: 'token', value: token);

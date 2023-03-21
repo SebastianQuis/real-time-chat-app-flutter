@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'package:real_time_chat_app/models/usuario.dart';
+import 'package:real_time_chat_app/pages/login_page.dart';
+import 'package:real_time_chat_app/services/auth_service.dart';
  
 class UsuariosPage extends StatefulWidget {
 
@@ -22,16 +25,36 @@ class _UsuariosPageState extends State<UsuariosPage> {
 
   @override
   Widget build(BuildContext context) {
+    final usuario = Provider.of<AuthService>(context).getUsuario;
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         centerTitle: true,
-        title: Text('Sebastian', style: TextStyle(color: Colors.black87)),
+        title: Text(usuario.nombre, style: TextStyle(color: Colors.black87)),
         backgroundColor: Colors.white,
         leading: IconButton(
-          icon: Icon(Icons.exit_to_app, color: Colors.black54,), 
-          onPressed: () { 
+          icon: Icon(Icons.exit_to_app, color: Color(0xffc1121f),), 
+          onPressed: ()  { 
+            // TODO: desconectar el socket server
+
             // TODO: Cerrar sesión
+            AuthService.deleteToken(); // sin provider porque es metodo estatico
+            Navigator.pushReplacement(context, 
+              PageRouteBuilder(
+                pageBuilder: (_, __, ___) => LoginPage(),
+                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  final curvedAnimation = CurvedAnimation(parent: animation, curve: Curves.easeIn);
+                  return FadeTransition(
+                    opacity: Tween<double>(begin: 0.5, end: 1.0).animate(curvedAnimation),
+                    child: child,
+                  );
+                },
+                transitionDuration: Duration(milliseconds: 300)
+              )
+            );
+
+
           },
         ),
         actions: [
