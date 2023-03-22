@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import 'package:real_time_chat_app/helpers/mostrar_alerta.dart';
 import 'package:real_time_chat_app/services/auth_service.dart';
+import 'package:real_time_chat_app/services/socket_service.dart';
 import 'package:real_time_chat_app/widgets/widgets.dart';
 
 class RegisterPage extends StatelessWidget {
@@ -62,6 +63,7 @@ class _FormState extends State<_Form> {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
+    final socketService = Provider.of<SocketService>(context);
     
     return Container(
       // margin: EdgeInsets.only( top: 30 ),
@@ -102,7 +104,7 @@ class _FormState extends State<_Form> {
 
                 final isLogged = await authService.register(nameController.text, emailController.text, passwordController.text);
                 if (isLogged == true) {
-                  //TODO: conectar al socket server
+                  socketService.connect();
                   Navigator.pushReplacementNamed(context, 'users'); 
                 } else if (isLogged == false) {
                   mostrarAlerta(context, 'Registro incorrecto', 'Registro inválido'); 

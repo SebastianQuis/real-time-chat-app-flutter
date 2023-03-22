@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+
 import 'package:provider/provider.dart';
+
 import 'package:real_time_chat_app/helpers/mostrar_alerta.dart';
 import 'package:real_time_chat_app/services/auth_service.dart';
-
+import 'package:real_time_chat_app/services/socket_service.dart';
 import 'package:real_time_chat_app/widgets/widgets.dart';
+
 
 class LoginPage extends StatelessWidget {
  
@@ -60,6 +63,7 @@ class _FormState extends State<_Form> {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
+    final socketService = Provider.of<SocketService>(context);
 
     return Container(
       // margin: EdgeInsets.only( top: 30 ),
@@ -93,8 +97,7 @@ class _FormState extends State<_Form> {
                 final isLogged = await authService.login(emailController.text.trim(), passwordController.text.trim()); 
 
                 if ( isLogged ) {
-                  //TODO: conectar al socket server
-                  
+                  socketService.connect();
                   Navigator.pushReplacementNamed(context, 'users'); 
                 } else {
                   mostrarAlerta(context, 'Login incorrecto', 'Verificar sus credenciales de ingreso.'); 
