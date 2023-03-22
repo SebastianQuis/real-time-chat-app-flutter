@@ -60,11 +60,13 @@ class _UsuariosPageState extends State<UsuariosPage> {
         actions: [
           Container(
             margin: EdgeInsets.only(right: 10),
-            child: Icon(Icons.check_circle, color: Colors.blue[600],),
-            // child: Icon(Icons.offline_bolt, color: Colors.red),
+            child: ( socketService.socket.connected)
+              ? Icon(Icons.check_circle, color: Colors.blue[600],)
+              : Icon(Icons.offline_bolt, color: Colors.red)
           )
         ],
       ),
+
       body: SmartRefresher(
         controller: _refreshController,
         enablePullDown: true,
