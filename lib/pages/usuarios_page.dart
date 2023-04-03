@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'package:real_time_chat_app/models/usuario.dart';
 import 'package:real_time_chat_app/pages/login_page.dart';
 import 'package:real_time_chat_app/services/auth_service.dart';
 import 'package:real_time_chat_app/services/socket_service.dart';
+import 'package:real_time_chat_app/services/usuarios_service.dart';
  
 class UsuariosPage extends StatefulWidget {
 
@@ -16,13 +17,22 @@ class UsuariosPage extends StatefulWidget {
 
 class _UsuariosPageState extends State<UsuariosPage> {
 
+  final usuarioService = UsuariosService();
   final RefreshController _refreshController = RefreshController(initialRefresh: false);
   
-  final usuarios = [
-    Usuario(uid: '1', nombre: 'Sebastian', email: 'test1@gmail.com', online: true),
-    Usuario(uid: '2', nombre: 'Susana', email: 'test2@gmail.com', online: false),
-    Usuario(uid: '3', nombre: 'Frances', email: 'test3@gmail.com', online: true),
-  ];
+  List<Usuario> usuarios = [];
+
+  // final usuarios = [
+  //   Usuario(uid: '1', nombre: 'Sebastian', email: 'test1@gmail.com', online: true),
+  //   Usuario(uid: '2', nombre: 'Susana', email: 'test2@gmail.com', online: false),
+  //   Usuario(uid: '3', nombre: 'Frances', email: 'test3@gmail.com', online: true),
+  // ];
+
+  @override
+  void initState() {
+    _loadUsers();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,8 +100,12 @@ class _UsuariosPageState extends State<UsuariosPage> {
   }
 
   _loadUsers() async {
-    await Future.delayed(Duration(milliseconds: 1000));
+    
+    this.usuarios = await usuarioService.getUsuarios();
+    setState(() {});
+    // await Future.delayed(Duration(milliseconds: 1000));
     // if failed,use refreshFailed()
+    
     _refreshController.refreshCompleted();
   }
 
