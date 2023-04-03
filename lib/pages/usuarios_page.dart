@@ -6,6 +6,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:real_time_chat_app/models/usuario.dart';
 import 'package:real_time_chat_app/pages/login_page.dart';
 import 'package:real_time_chat_app/services/auth_service.dart';
+import 'package:real_time_chat_app/services/chat_service.dart';
 import 'package:real_time_chat_app/services/socket_service.dart';
 import 'package:real_time_chat_app/services/usuarios_service.dart';
  
@@ -61,7 +62,7 @@ class _UsuariosPageState extends State<UsuariosPage> {
                     child: child,
                   );
                 },
-                transitionDuration: Duration(milliseconds: 300)
+                transitionDuration: const Duration(milliseconds: 300)
               )
             );
             
@@ -69,7 +70,7 @@ class _UsuariosPageState extends State<UsuariosPage> {
         ),
         actions: [
           Container(
-            margin: EdgeInsets.only(right: 10),
+            margin: const EdgeInsets.only(right: 10),
             child: ( socketService.socket.connected)
               ? Icon(Icons.check_circle, color: Colors.blue[600],)
               : Icon(Icons.offline_bolt, color: Colors.red)
@@ -133,6 +134,11 @@ class _UserListTile extends StatelessWidget {
           color: usuario.online ? Colors.green : Colors.red,
         ),
       ),
+      onTap: () {
+        final chatService = Provider.of<ChatService>(context, listen: false);
+        chatService.usuarioPara = usuario;
+        Navigator.pushNamed(context, 'chat');
+      },
     );
   }
 }
