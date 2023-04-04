@@ -4,8 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
+import 'package:real_time_chat_app/services/auth_service.dart';
 
 import 'package:real_time_chat_app/services/chat_service.dart';
+import 'package:real_time_chat_app/services/socket_service.dart';
+import 'package:real_time_chat_app/services/usuarios_service.dart';
 import 'package:real_time_chat_app/widgets/chat_message.dart';
  
 class ChatPage extends StatefulWidget {
@@ -15,17 +18,27 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin { // vsync this
-
-
   final _textController = TextEditingController();
   final _focusNode = FocusNode();
-  bool _isWriting = false;
+
+  late ChatService chatService;
+  late AuthService authService;
+  late SocketService socketService;
 
   List<ChatMessage> _messages =  [];
+  bool _isWriting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    this.chatService = Provider.of<ChatService>(context, listen: false);
+    this.socketService = Provider.of<SocketService>(context, listen: false);
+    this.authService = Provider.of<AuthService>(context, listen: false);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final chatService = Provider.of<ChatService>(context);
+    // final chatService = Provider.of<ChatService>(context);
     final usuarioPara = chatService.usuarioPara;
 
     return Scaffold(
@@ -84,6 +97,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin { // 
             Flexible( // extienda todo lo necesario
               child: TextField(
                 controller: _textController,
+                autocorrect: false,
                 onSubmitted: _handleSubmit, // enviar entrega
                 onChanged: (text) {
                   setState(() {
@@ -142,9 +156,14 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin { // 
 
     newMessage.animationController.forward(); // play a la animation
 
-    setState(() {
-      _isWriting = false; 
+    setState(() { _isWriting = false; });
+
+    this.socketService.emit('mensaje-personal',{
+      'de': authService.usuario.uid,
+      'para': chatService.usuarioPara.uid,
+      'mensaje': texto
     });
+  
   }
 
   @override
