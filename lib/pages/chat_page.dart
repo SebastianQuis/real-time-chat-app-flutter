@@ -4,11 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
-import 'package:real_time_chat_app/services/auth_service.dart';
 
+import 'package:real_time_chat_app/services/auth_service.dart';
 import 'package:real_time_chat_app/services/chat_service.dart';
 import 'package:real_time_chat_app/services/socket_service.dart';
-import 'package:real_time_chat_app/services/usuarios_service.dart';
 import 'package:real_time_chat_app/widgets/chat_message.dart';
  
 class ChatPage extends StatefulWidget {
@@ -31,9 +30,28 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin { // 
   @override
   void initState() {
     super.initState();
-    this.chatService = Provider.of<ChatService>(context, listen: false);
-    this.socketService = Provider.of<SocketService>(context, listen: false);
-    this.authService = Provider.of<AuthService>(context, listen: false);
+    chatService   = Provider.of<ChatService>(context, listen: false);
+    socketService = Provider.of<SocketService>(context, listen: false);
+    authService   = Provider.of<AuthService>(context, listen: false);
+
+    socketService.socket.on('mensaje-personal', _escucharMensaje);
+  }
+
+  void _escucharMensaje( dynamic payload ) {
+    print( payload['mensaje'] ); // escuchando el mensaje que emite el servidor
+
+    ChatMessage message = ChatMessage(
+      uid: payload['de'], 
+      text: payload['mensaje'], 
+      animationController: AnimationController(vsync: this, duration: Duration( milliseconds: 400 )),
+    );
+
+    setState(() {
+      _messages.insert(0, message);
+    });
+
+    message.animationController.forward();
+
   }
 
   @override
@@ -46,14 +64,14 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin { // 
         title: Row(
           children: [
             CircleAvatar(
-              child: Text(usuarioPara.nombre.substring(0,2), style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
               maxRadius: 14,
               backgroundColor: Colors.blue[100],
+              child: Text(usuarioPara.nombre.substring(0,2), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
             ),
 
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
 
-            Text(usuarioPara.nombre, style: TextStyle(fontSize: 17, color: Colors.black54)),
+            Text(usuarioPara.nombre, style: const TextStyle(fontSize: 17, color: Colors.black54)),
 
           ],
         ),
@@ -66,7 +84,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin { // 
 
             Flexible( // flexibilidad, si no error con listview.builder
               child: ListView.builder(
-                physics: BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 itemCount: _messages.length,
                 itemBuilder: (context, i) => _messages[i], // retorna un widget mymessage - mynotmessage
                 reverse: true, // scroll de abajo hacia arriba
@@ -90,7 +108,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin { // 
   Widget _inputChat(){
     return SafeArea(
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 8),
+        margin: const EdgeInsets.symmetric(horizontal: 8),
         child: Row(
           children: [
             
@@ -112,7 +130,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin { // 
             ),
 
             Container(
-              margin: EdgeInsets.symmetric( horizontal: 4 ),
+              margin: const EdgeInsets.symmetric( horizontal: 4 ),
               child: Platform.isIOS
                 ? CupertinoButton(
                   onPressed: _isWriting
@@ -158,9 +176,9 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin { // 
 
     setState(() { _isWriting = false; });
 
-    this.socketService.emit('mensaje-personal',{
-      'de': authService.usuario.uid,
-      'para': chatService.usuarioPara.uid,
+    socketService.emit('mensaje-personal',{
+      'de'     : authService.usuario.uid,
+      'para'   : chatService.usuarioPara.uid,
       'mensaje': texto
     });
   
@@ -174,6 +192,8 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin { // 
     for( ChatMessage message in _messages ) {
       message.animationController.dispose();
     }
+
+    socketService.socket.off('mensaje-personal');
     
     super.dispose();
   }
