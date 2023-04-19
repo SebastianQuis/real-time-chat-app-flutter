@@ -53,17 +53,14 @@ class AuthService with ChangeNotifier{
       }
     );
 
-    print(resp.body);
+    // print(resp.body);
     autenticando = false;
 
     if ( resp.statusCode == 200 ) { // success
       final loginResponse = loginResponseFromJson(resp.body);
       usuario = loginResponse.usuario;
       // print(usuario.uid);
-
-      // TODO: save token jwt
       await guardarToken( loginResponse.token );
-      
       return true;
     } else {
       return false;

@@ -22,7 +22,7 @@ class UsuariosService {
       return usuarioResponse.usuarios;
       
     } catch (e) {
-      
+
       return [];
     }
   }

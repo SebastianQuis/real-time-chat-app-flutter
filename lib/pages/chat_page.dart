@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
+import 'package:real_time_chat_app/models/mensajes_response.dart';
 
 import 'package:real_time_chat_app/services/auth_service.dart';
 import 'package:real_time_chat_app/services/chat_service.dart';
@@ -35,6 +36,23 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin { // 
     authService   = Provider.of<AuthService>(context, listen: false);
 
     socketService.socket.on('mensaje-personal', _escucharMensaje);
+
+    _cargarMensajes(chatService.usuarioPara.uid);
+  }
+
+  void _cargarMensajes( String usuarioID ) async {
+    List<Mensaje> chat = await chatService.getChat(usuarioID);
+    print(chat);
+
+    final history = chat.map((m) => ChatMessage(
+      uid: m.de, 
+      text: m.mensaje, 
+      animationController: AnimationController(vsync: this, duration: Duration(milliseconds: 0))..forward(),
+    ));
+
+    setState(() {
+      _messages.insertAll(0, history);
+    });
   }
 
   void _escucharMensaje( dynamic payload ) {
@@ -162,7 +180,7 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin { // 
     _focusNode.requestFocus(); // no se baje el teclado una vez envie el texto
 
     final newMessage = ChatMessage( // nuevo mensaje
-      uid: '123', 
+      uid: authService.usuario.uid, // usuario que crea el mensaje
       text: texto, 
       animationController: AnimationController(
         vsync: this,
