@@ -41,13 +41,18 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin { // 
   }
 
   void _cargarMensajes( String usuarioID ) async {
+    
+
     List<Mensaje> chat = await chatService.getChat(usuarioID);
     print(chat);
 
     final history = chat.map((m) => ChatMessage(
       uid: m.de, 
       text: m.mensaje, 
-      animationController: AnimationController(vsync: this, duration: Duration(milliseconds: 0))..forward(),
+      animationController: AnimationController(vsync: this, duration: Duration(milliseconds: 0))..forward(), 
+      time: m.createdAt.minute.toString().length == 1
+        ? '${m.createdAt.hour}:0${m.createdAt.minute}'
+        : '${m.createdAt.hour}:${m.createdAt.minute}',
     ));
 
     setState(() {

@@ -8,12 +8,14 @@ class ChatMessage extends StatelessWidget {
   
   final String uid;
   final String text;
+  final String? time;
   final AnimationController animationController;
 
   ChatMessage({
     required this.uid,
     required this.text, 
     required this.animationController, 
+    this.time, 
   });
 
   @override
@@ -36,14 +38,24 @@ class ChatMessage extends StatelessWidget {
   Widget _myMessage() {
     return Align(
       alignment: Alignment.centerRight,
-      child: Container(
-        margin: EdgeInsets.only( top: 5, right: 5, left: 50, bottom: 5),
-        padding: EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: Colors.blue[100],
-          borderRadius: BorderRadius.circular(20)
-        ),
-        child: Text(this.text,)
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Container(
+            margin: EdgeInsets.only( top: 5, right: 5, left: 50, bottom: 5),
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.blue[100],
+              borderRadius: BorderRadius.circular(20)
+            ),
+            child: Text(this.text,)
+          ),
+          Container(
+            margin: EdgeInsets.only(right: 10),
+            // color: Colors.red,
+            child: Text(time?? 'cargando..', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),),
+          )
+        ],
       ),
     );
   }
@@ -51,14 +63,24 @@ class ChatMessage extends StatelessWidget {
   Widget _myNotMessage() {
     return Align(
       alignment: Alignment.centerLeft,
-      child: Container(
-        margin: EdgeInsets.only( top: 5, right: 50, left: 5, bottom: 5 ),
-        padding: EdgeInsets.all(10),
-        child: Text(this.text),
-        decoration: BoxDecoration(
-          color: Colors.blueGrey[100],
-          borderRadius: BorderRadius.circular(20)
-        )
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            margin: EdgeInsets.only( top: 5, right: 50, left: 5, bottom: 5 ),
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.blueGrey[100],
+              borderRadius: BorderRadius.circular(20)
+            ),
+            child: Text(this.text)
+          ),
+          Container(
+            margin: EdgeInsets.only(left: 10),
+            // color: Colors.red,
+            child: Text(time ?? 'cargando..', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),),
+          ),
+        ],
       ),
     );
   }
